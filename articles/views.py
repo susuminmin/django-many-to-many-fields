@@ -87,6 +87,7 @@ def comment_update(request, article_pk, comment_pk):
     article = get_object_or_404(Article, pk=article_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
     comments = Comment.objects.all()
+    empty_form = CommentForm()
     if request.method == 'POST':
         comment_form = CommentForm(request.POST, instance=comment)
         if comment_form.is_valid:
@@ -95,10 +96,12 @@ def comment_update(request, article_pk, comment_pk):
     else: # GET
         comment_form = CommentForm(instance=comment)
     context = {
+        'empty_form': empty_form,
         'article': article,
         'comment': comment,
         'comments': comments,
         'comment_form': comment_form,
+        'comment_pk': comment_pk, 
         }
     return render(request, 'articles/comment_update.html', context)
     

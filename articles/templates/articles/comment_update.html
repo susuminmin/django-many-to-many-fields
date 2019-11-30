@@ -5,7 +5,7 @@
 <h1>{{ article.pk }}. {{ article.title }}</h1>
 {{ article.content }}</br>
 </br>
-<!-- 수정하기, 삭제하기 -->
+
 <a href="{% url 'articles:update' article.pk %}"><button>수정하기</button></a>
 <form method="POST" action="{% url 'articles:delete' article.pk %}">
   {% csrf_token %}
@@ -13,16 +13,23 @@
 </form>
 <hr>
 <h3>댓글</h3>
-<form action="{% url 'articles:comment_update' article.pk comment.pk %}" method="POST">
+<form action="{% url 'articles:comment_create' article.pk %}" method="POST">
   {% csrf_token %}
-  내용 {{ comment_form.content }}
-  <button type="submit">수정</button>
+  내용 {{ empty_form.content }}
+  {% comment %} <button type="submit">달기</button> {% endcomment %}
 </form>
 <hr>
 
 {% for comment in comments %}
-<li>
-{{ comment.content }} {{ comment.created_at }}
-</li>
+{% if comment.pk == comment_pk %}
+<form action="{% url 'articles:comment_update' article.pk comment.pk %}" method="POST">
+  {% csrf_token %}
+  {{ comment_form.content}} {{comment.created_at}}
+  <button type="submit">수정</button>
+</form>
+{% else %}
+  {{ comment.content }} {{ comment.created_at }}
+{% endif %}
+
 {% endfor %}
 {% endblock container %}
