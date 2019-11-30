@@ -9,3 +9,16 @@ class Article(models.Model):
 
     class Meta:
         ordering = ('-pk', )
+
+
+class Comment(models.Model): # Article 과 1:N 관계
+    article = models.ForeignKey(
+        Article,
+        on_delete="models.CASCADE",
+        related_name="comments",
+        )
+    content = models.CharField(max_length=200)
+    created_at = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-pk']

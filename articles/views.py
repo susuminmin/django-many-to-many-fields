@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
-from .models import Article
-from .forms import ArticleForm
+from .models import Article, Comment
+from .forms import ArticleForm, CommentForm
 
 
 @require_GET
@@ -14,7 +14,14 @@ def index(request):
 @require_GET
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    context = {'article': article}
+    # 기존 댓글과 댓글 생성 폼도 보여주어야 함
+    comments = Comment.objects.all()
+    comment_form = CommentForm()
+    context = {
+        'article': article,
+        'comments': comments,
+        'comment_form': comment_form,
+        }
     return render(request, 'articles/detail.html', context)
 
 
@@ -57,3 +64,20 @@ def delete(request, article_pk):
     article.delete()
     return redirect('articles:index')
 
+
+@require_POST
+def comment_create(request, article_pk):
+    form = CommentForm(request.POST)
+    if form.is_valid(): # fields 에 article 정보 없었음
+        comment = form.save(commit=False) # instance 를 반환
+        comment.article_id = article_pk
+        comment.save()
+    return redirect('articles:detail', article_pk)
+
+
+# Article Delete 와 마찬가지로 url 삭제 불가능하도록
+@require_POST
+def comment_delete(request, article_pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    comment.delete()
+    return redirect('articles:detail', article_pk)
