@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
-
-{% block title %}Article::Create{% endblock title %}
+{% block title %}{{ article.pk }}번 게시글 수정하기{% endblock title %}
 
 {% block container %}
 <form method="POST">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">생성하기</button>
+  <button type="submit">수정하기</button>
 </form>
 {% endblock container %}

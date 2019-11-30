@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}{{ article.pk }}번 게시글 상세보기{% endblock title %}
+
+{% block container %}
+<h1>{{ article.pk }}. {{ article.title }}</h1>
+{{ article.content }}</br>
+</br>
+<!-- 수정하기, 삭제하기 -->
+<a href="{% url 'articles:update' article.pk %}"><button>수정하기</button></a>
+<form method="POST" action="{% url 'articles:delete' article.pk %}">
+  {% csrf_token %}
+  <button type="submit">삭제하기</button>
+</form>
+{% endblock container %}
