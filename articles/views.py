@@ -81,3 +81,24 @@ def comment_delete(request, article_pk, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     comment.delete()
     return redirect('articles:detail', article_pk)
+
+
+def comment_update(request, article_pk, comment_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    comments = Comment.objects.all()
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST, instance=comment)
+        if comment_form.is_valid:
+            comment_form.save()
+            return redirect('articles:detail', article_pk)
+    else: # GET
+        comment_form = CommentForm(instance=comment)
+    context = {
+        'article': article,
+        'comment': comment,
+        'comments': comments,
+        'comment_form': comment_form,
+        }
+    return render(request, 'articles/comment_update.html', context)
+    

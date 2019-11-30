@@ -15,4 +15,5 @@ urlpatterns = [
     # Comment CRD (R은 게시글 상세보기)
     path('<int:article_pk>/comment_create/', views.comment_create, name='comment_create'),
     path('<int:article_pk>/comment_delete/<int:comment_pk>/', views.comment_delete, name="comment_delete"),
+    path('<int:article_pk>/comment_update/<int:comment_pk>/', views.comment_update, name="comment_update"),
 ]
