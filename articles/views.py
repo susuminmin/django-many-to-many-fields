@@ -17,7 +17,7 @@ def index(request):
 def detail(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
     # 기존 댓글과 댓글 생성 폼도 보여주어야 함
-    comments = Comment.objects.all()
+    comments = article.comments.all()
     comment_form = CommentForm()
     context = {
         'article': article,
@@ -33,8 +33,12 @@ def create(request):
         # Article 을 생성해달라고 하는 요청
         form = ArticleForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('articles:index')
+            # Article 모델에 user field 추가 후
+            # form.save() 대신 다음 로직 구현
+            article = form.save(commit=False) # 모델 반환 (title 과 content 만 쓴 상태)
+            article.user = request.user # user field 에 지금 request 보낸 user 를 저장
+            article.save() # 비로소 저장
+            return redirect('articles:detail', article.pk)
         else:
             # invalid 한 정보 넣은 채 form 담은 페이지 보여주기
             context = {'form': form}
@@ -50,16 +54,19 @@ def create(request):
 @login_required
 def update(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
-    if request.method == 'POST':
-        form = ArticleForm(request.POST, instance=article)
-        if form.is_valid():
-            form.save()
-            return redirect('articles:detail', article_pk)
-    else: # GET 
-        # 기존 정보가 담긴 폼을 보여줘야 함... 
-        form = ArticleForm(instance=article)
-    context =  {'form': form}
-    return render(request, 'articles/update.html', context)
+    if article.user == request.user:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, instance=article)
+            if form.is_valid():
+                form.save()
+                return redirect('articles:detail', article_pk)
+        else: # GET 
+            # 기존 정보가 담긴 폼을 보여줘야 함... 
+            form = ArticleForm(instance=article)
+        context =  {'form': form}
+        return render(request, 'articles/update.html', context)
+    else: # 글 작성자 본인이 아닌 경우
+        return redirect('articles:detail', article_pk)
 
 
 # articles/3/delete/ 로 url 에 직접 칠 때 삭제가 되지 않도록
@@ -67,7 +74,10 @@ def update(request, article_pk):
 def delete(request, article_pk):
     if request.user.is_authenticated:
         article = get_object_or_404(Article, pk=article_pk)
-        article.delete()
+        if article.user == request.user:
+            article.delete()
+        else:
+            return redirect('articles:detail', article_pk)
     return redirect('articles:index')
 
 
@@ -78,6 +88,7 @@ def comment_create(request, article_pk):
         if form.is_valid(): # fields 에 article 정보 없었음
             comment = form.save(commit=False) # instance 를 반환
             comment.article_id = article_pk
+            comment.user = request.user
             comment.save()
     return redirect('articles:detail', article_pk)
 
@@ -87,7 +98,8 @@ def comment_create(request, article_pk):
 def comment_delete(request, article_pk, comment_pk):
     if request.user.is_authenticated:
         comment = get_object_or_404(Comment, pk=comment_pk)
-        comment.delete()
+        if comment.user == request.user:
+            comment.delete()
         return redirect('articles:detail', article_pk)
     else:
         return HttpResponse('You are unauthorized', status=401)
@@ -112,7 +124,7 @@ def comment_update(request, article_pk, comment_pk):
         'comment': comment,
         'comments': comments,
         'comment_form': comment_form,
-        'comment_pk': comment_pk, 
+        'comment_pk': comment_pk, # flag 역할
         }
     return render(request, 'articles/comment_update.html', context)
     

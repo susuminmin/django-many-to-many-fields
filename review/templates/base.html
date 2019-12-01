@@ -18,6 +18,7 @@
         <p>
           <span>Hello, {{ user.username }}</span>
           <a href="{% url 'accounts:logout' %}"><button>로그아웃</button></a>
+          <a href="{% url 'accounts:update' %}">회원정보 수정</a>
           <form action="{% url 'accounts:signout' %}" request="POST">
             {% csrf_token %}
             <button type="submit">회원탈퇴</button>

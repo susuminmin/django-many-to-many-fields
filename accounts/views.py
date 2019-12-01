@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
 from django.views.decorators.http import require_POST
 
 
@@ -49,3 +50,27 @@ def signout(request):
         request.user.delete()
     return redirect('articles:index')
     
+@login_required
+def update(request):
+    if request.method == 'POST':
+        change_form = UserChangeForm(data=request.POST, instance=request.user)
+        if change_form.is_valid():
+            change_form.save()
+            return redirect('articles:index')
+    else: # GET 요청 : form 보여주기
+        # 기존 정보가 담긴 form 
+        change_form = UserChangeForm(instance=request.user)
+    context = {'change_form': change_form}
+    return render(request, 'accounts/update.html', context)
+
+
+@login_required
+# password 는 회원정보 수정에서 할 수 없음 (장고 기본 세팅)
+# password 라는 url, view 함수 필요
+def password(request):
+    if request.method == 'POST':
+        pass
+    else:
+        psw_form = PasswordChangeForm()
+        context = {'psw_form': psw_form}
+        return render(request, 'accounts/password.html', context)

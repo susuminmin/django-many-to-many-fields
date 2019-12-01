@@ -3,9 +3,12 @@
 
 {% block container %}
 <h1>{{ article.pk }}. {{ article.title }}</h1>
-{{ article.content }}</br>
-</br>
-{% if user.is_authenticated %}
+<h3>작성자 : {{ article.user }}</h3>
+<p>{{ article.content }}</p>
+<hr>
+
+<!-- 요청자가 작성자 본인일 때만 게시글 수정 혹은 삭제 가능-->
+{% if request.user == article.user %}
 <a href="{% url 'articles:update' article.pk %}"><button>수정하기</button></a>
 <form method="POST" action="{% url 'articles:delete' article.pk %}">
   {% csrf_token %}
@@ -13,7 +16,9 @@
 </form>
 <hr>
 {% endif %}
+
 <h3>댓글</h3>
+<!-- 댓글 입력 창 -->
 {% if user.is_authenticated %}
 <form action="{% url 'articles:comment_create' article.pk %}" method="POST">
   {% csrf_token %}
@@ -23,18 +28,21 @@
 {% endif %}
 <hr>
 
+<!-- 댓글 표시 -->
 {% for comment in comments %}
-{% if user.is_authenticated %}
+{% if request.user == comment.user %}
 <!-- url 로 들어가서 삭제하는 것 방지하도록 form, require_POST 사용 -->
 <form style="display: inline" action="{% url 'articles:comment_delete' article.pk comment.pk %}" method="POST">
   {% csrf_token %}
-  {{ comment.content }} {{ comment.created_at }}
+  {{ comment.content }} {{ comment.created_at }} by {{ comment.user }}
   <button type="submint">삭제</button>
 </form>
-{% else %}
-{{ comment.content }} {{ comment.created_at }}
-{% endif %}
 <a href="{% url 'articles:comment_update' article.pk comment.pk %}"><button>수정</button></a>
+{% else %} <!-- 삭제/수정 버튼 활성화 X 내용만 보여줌 -->
+  <!-- 내 댓글이 아닌 경우 comment_update.html 로 이어지지 못함-->
+  {{ comment.content }} {{ comment.created_at }} by {{ comment.user }}
+{% endif %}
 <br>
 {% endfor %}
+
 {% endblock container %}
