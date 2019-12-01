@@ -2,10 +2,17 @@
 {% block title %}Article:index{% endblock title %}
 
 {% block container %}
+
 <!-- 1. 기존 Article 목록 모두 보여주는 부분 -->
 <h2>Article List</h2>
+
+{% if user.is_authenticated %}
 <!-- 2. 새로운 Article 생성하기로 연결 -->
 <a href="{% url 'articles:create' %}">[생성하기]</a>
+{% else %}
+<a href="{% url 'accounts:signup' %}">회원가입을 하면 게시글을 작성할 수 있습니다.</a>
+{% endif %}
+
 <hr>
 {% for article in articles  %}
 <div>
@@ -13,4 +20,5 @@
   <a href="{% url 'articles:detail' article.pk  %}">[상세보기]</a>
 </div>
 {% endfor %}
+
 {% endblock container %}
