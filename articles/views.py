@@ -139,3 +139,16 @@ def like(request, article_pk):
     else:
         article.like_users.add(request.user)
     return redirect('articles:detail', article_pk)
+
+
+@login_required
+def follow(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    reader = request.user # article 보는 중인 사람...
+    # reader 가 article.user 를 follow 하려고 함
+    if article.user != reader:
+        if reader in article.user.followers.all():
+            article.user.followers.remove(reader)
+        else:
+            article.user.followers.add(reader)
+    return redirect('articles:detail', article_pk)

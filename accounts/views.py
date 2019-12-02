@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, PasswordChangeForm
+from .forms import CustomUserCreationForm
 from django.views.decorators.http import require_POST
 
 
@@ -10,13 +11,13 @@ def signup(request):
         redirect('articles:index')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('articles:index')
     else: # GET 
-        form = UserCreationForm() # 빈 UserCreationForm 보여줌
+        form = CustomUserCreationForm() # 빈 UserCreationForm 보여줌
     context = {'form': form}
     return render(request, 'accounts/signup.html', context)
 

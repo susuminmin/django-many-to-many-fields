@@ -1,0 +1,9 @@
+<!-- 글 작성자 follow 기능 -->
+<a href="{% url 'articles:follow' article.pk %}">
+follow
+</a>
+<p>
+글 작성자의 follower 정보
+{{ article.user.followers.all | length }}
+</p>
+<hr>

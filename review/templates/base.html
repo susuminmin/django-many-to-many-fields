@@ -15,15 +15,16 @@
     <h1>저희 페이지 오신걸 환영합니다.</h1>
     <!-- 로그인 상태일 때 -->
       {% if user.is_authenticated %}
-        <p>
+        <p style="display: inline">
           <span>Hello, {{ user.username }}</span>
           <a href="{% url 'accounts:logout' %}"><button>로그아웃</button></a>
-          <a href="{% url 'accounts:update' %}">회원정보 수정</a>
-          <form action="{% url 'accounts:signout' %}" request="POST">
+          <a href="{% url 'accounts:update' %}"><button>회원정보 수정</button></a>
+        </p>
+          <form action="{% url 'accounts:signout' %}" request="POST" style="display:inline">
             {% csrf_token %}
             <button type="submit">회원탈퇴</button>
           </form>
-        </p>
+          </br>
     <!-- 로그인 상태 아닐 때 -->
       {% else %}
       <p>
