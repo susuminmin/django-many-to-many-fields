@@ -8,7 +8,10 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+<<<<<<< HEAD
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_articles')
+=======
+>>>>>>> f49bc6329a2a280d0a177254db18a817eb574e39
 
     class Meta:
         ordering = ('-pk', )

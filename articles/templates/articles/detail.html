@@ -45,6 +45,7 @@
 <br>
 {% endfor %}
 
+<<<<<<< HEAD
 <!-- 좋아요 기능 구현 -->
 {% comment %} {% if request.user in article.like_users.all %}
   <a href="{% url 'articles:like' article.pk %}">❤️</a>
@@ -65,4 +66,6 @@
 {% endif %}
 {{ article.like_users.all | length }} 명이 좋아합니다. 
 
+=======
+>>>>>>> f49bc6329a2a280d0a177254db18a817eb574e39
 {% endblock container %}
