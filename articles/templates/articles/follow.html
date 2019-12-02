@@ -1,9 +1,17 @@
 <!-- 글 작성자 follow 기능 -->
-<a href="{% url 'articles:follow' article.pk %}">
+<a style="display: block" href="{% url 'articles:follow' article.pk %}">
 follow
 </a>
+<span><b>글 작성자를 follow 하는 user 목록</b></span>
 <p>
-글 작성자의 follower 정보
-{{ article.user.followers.all | length }}
+{% for temp in article.user.followers.all  %}
+  {{ temp.username }}<br>
+{% endfor %}
+{{ article.user.followers.all | length }}명이 이 글 작성자를 follow 합니다.
+</p>
+
+<span><b>글 작성자가 follow 하는 user 정보</b></span>
+<p>
+{{ article.user.followings.all | length }}명을 follow 중입니다.
 </p>
 <hr>
