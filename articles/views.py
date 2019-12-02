@@ -128,3 +128,14 @@ def comment_update(request, article_pk, comment_pk):
         }
     return render(request, 'articles/comment_update.html', context)
     
+
+# 특정 게시글 좋아요 기능 (detail 페이지에 표시)
+@login_required
+def like(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+    # if request.user not in article.like_users:
+    if article.like_users.filter(pk=request.user.pk).exists():
+        article.like_users.remove(request.user)
+    else:
+        article.like_users.add(request.user)
+    return redirect('articles:detail', article_pk)

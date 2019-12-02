@@ -41,4 +41,18 @@
 {% endif %}
 {% endfor %}
 
+{% if article.user != request.user %}
+  <a href="{% url 'articles:like' article.pk %}">
+  {% if  request.user in article.like_users.all  %}
+  ❤️
+  {% else %}
+  🖤
+  {% endif %}
+  </a>
+{% else %}
+<span>🖤 작성자 본인은 좋아요 표시를 할 수 없습니다.</span></br>
+{% endif %}
+{{ article.like_users.all | length }} 명이 좋아합니다. 
+
+
 {% endblock container %}
